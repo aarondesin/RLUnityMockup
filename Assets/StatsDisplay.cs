@@ -13,7 +13,9 @@ public class StatsDisplay : MonoBehaviour {
         Horizontal,
         Vertical,
         Gas,
-        Brake
+        Brake,
+        Grounded,
+        Flipped
     }
 
     void Awake () {
@@ -33,6 +35,12 @@ public class StatsDisplay : MonoBehaviour {
                 break;
             case DisplayType.Brake:
                 _text.text = "Brake: " + PlayerController.Instance.Brake.ToString();
+                break;
+            case DisplayType.Grounded:
+                _text.text = "Grounded: " + PlayerController.Instance.Grounded.ToString();
+                break;
+            case DisplayType.Flipped:
+                _text.text = "Flipped: " + PlayerController.Instance.Flipped.ToString();
                 break;
         }
     }
