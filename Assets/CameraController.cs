@@ -5,7 +5,8 @@ using UnityEngine;
 public class CameraController : MonoBehaviour {
 
     const float _CAMERA_HEIGHT = 5f;
-    const float _CAMERA_XZ_OFFSET = 7.5f;
+    const float _CAMERA_XZ_OFFSET = 12f;
+    const float _MIN_CAMERA_HEIGHT = 5f;
 
     Mode _mode = Mode.BallCam;
 
@@ -31,11 +32,12 @@ public class CameraController : MonoBehaviour {
                 Vector3 playerPos = PlayerController.Instance.transform.position;
                 
                 Vector3 ballToPlayer = playerPos - _ballPos;
-                ballToPlayer.y = 0f;
+                //ballToPlayer.y = 0f;
                 ballToPlayer = ballToPlayer.normalized;
                 Vector3 newPos = new Vector3 (
                     playerPos.x + ballToPlayer.x * _CAMERA_XZ_OFFSET,
-                    playerPos.y + _CAMERA_HEIGHT,
+                    //playerPos.y + _CAMERA_HEIGHT,
+                    Mathf.Clamp(playerPos.y + ballToPlayer.y * _CAMERA_XZ_OFFSET, _MIN_CAMERA_HEIGHT, Mathf.Infinity),
                     playerPos.z + ballToPlayer.z * _CAMERA_XZ_OFFSET);
                 transform.position = newPos;
                 transform.LookAt (_ballPos, Vector3.up);

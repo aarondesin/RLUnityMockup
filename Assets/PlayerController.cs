@@ -5,22 +5,23 @@ using UnityEngine.Events;
 
 public class PlayerController : MonoBehaviour {
 
-    const float _ACCELERATION = 1f;
+    const float _ACCELERATION = 500f;
     const float _BRAKE_STRENGTH = 1f;
-    const float _STEERING_STRENGTH_GROUNDED = 1.5f;
+    const float _STEERING_STRENGTH_GROUNDED = 2f;
     const float _STEERING_STRENGTH_INAIR = 1f;
-    const float _MAX_VELOCITY_UNBOOSTED = 1f;
+    const float _MAX_VELOCITY_UNBOOSTED = 45f;
     const float _PITCH_SPEED = 1f;
     const float _ROLL_SPEED = 1f;
     const float _YAW_SPEED = 1f;
 
-    const float _JUMP_FORCE = 10f;
+    const float _JUMP_FORCE = 15f;
     const float _DODGEFLIP_THRESHOLD = 0.5f;
-    const float _DODGEFLIP_FORCE = 12f;
-    const float _DODGEFLIP_TORQUE = 3.5f;
+    const float _DODGEFLIP_FORCE = 15f;
+    const float _DODGEFLIP_TORQUE = 4f;
     const float _FLIP_FORCE = 10f;
     const float _FLIP_TORQUE = 1f;
-    const float _FLIPPED_THRESHOLD = 0.1f;
+    const float _FLIPPED_THRESHOLD = 0.5f;
+    const float _DODGE_FLIP_DURATION = 0.75f;
 
     const int _JUMPS_ALLOWED = 2;
 
@@ -37,6 +38,8 @@ public class PlayerController : MonoBehaviour {
 
     int _jumpsLeft = 2;
 
+    float _dodgeFlipDuration;
+
     float _h;
     float _v;
     float _g;
@@ -52,14 +55,29 @@ public class PlayerController : MonoBehaviour {
     private void FixedUpdate() {
         HandleInputs();
 
-        float throttleValue = Input.GetAxis ("Gas") * _ACCELERATION + -Input.GetAxis("Brake") * _BRAKE_STRENGTH;
+        float forwardValue = Input.GetAxis ("Gas") * _ACCELERATION;
+        float backwardValue = Input.GetAxis("Brake") * _BRAKE_STRENGTH;
+
+        float throttleValue = forwardValue - backwardValue;
         float steeringMultiplier = _grounded ? (_flipped ? 0f : _STEERING_STRENGTH_GROUNDED) : _STEERING_STRENGTH_INAIR;
         float steeringValue = Input.GetAxis ("Horizontal") * steeringMultiplier * Mathf.Clamp01(_rb.velocity.magnitude / _MAX_VELOCITY_UNBOOSTED);
-        if (_grounded) {
+        if (_grounded && !_flipped) {
             //_rb.MovePosition (transform.forward * throttleValue * Time.fixedDeltaTime);
-            _rb.AddForce (transform.forward * throttleValue, ForceMode.Impulse);
+            
+            var v = _rb.velocity.magnitude;
             _rb.MoveRotation (transform.rotation * Quaternion.Euler (0f, steeringValue, 0f));
-            _rb.velocity = transform.forward * _rb.velocity.magnitude;
+            _rb.velocity = transform.forward * v;
+            var force = transform.forward * throttleValue;
+            _rb.AddForce (force, ForceMode.Acceleration);
+            if (_rb.velocity.magnitude > _MAX_VELOCITY_UNBOOSTED)
+                _rb.velocity *= _MAX_VELOCITY_UNBOOSTED / _rb.velocity.magnitude;
+            //_rb.MovePosition (transform.position + transform.forward * (_rb.velocity.magnitude + throttleValue * Time.fixedDeltaTime));
+            //_rb.velocity = transform.forward * (_rb.velocity.magnitude + throttleValue * Time.fixedDeltaTime);
+        } else if (_dodgeFlipDuration > 0f) {
+            _dodgeFlipDuration -= Time.fixedDeltaTime;
+            if (_dodgeFlipDuration <= 0f) {
+                _rb.useGravity = true;
+            }
         } else {
             _rb.AddTorque (transform.up * _YAW_SPEED  * _h);
             _rb.AddTorque (transform.right * _PITCH_SPEED * _v);
@@ -125,6 +143,8 @@ public class PlayerController : MonoBehaviour {
         _rb.AddForce (transform.right * _h * _DODGEFLIP_FORCE, ForceMode.VelocityChange);
         _rb.AddForce (transform.forward * _v * _DODGEFLIP_FORCE, ForceMode.VelocityChange);
         _rb.detectCollisions = false;
+        _rb.useGravity = false;
+        _dodgeFlipDuration = _DODGE_FLIP_DURATION;
         _jumpsLeft--;
     }
 
