@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Ball : MonoBehaviour {
 
-    const float _EXPLOSION_FORCE = 10000f;
+    const float _EXPLOSION_FORCE = 100000f;
     const float _EXPLOSION_RADIUS = 100f;
 
     public static Ball Instance;

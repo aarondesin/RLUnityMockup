@@ -5,7 +5,7 @@ using UnityEngine.Events;
 
 public class PlayerController : MonoBehaviour {
 
-    const float _ACCELERATION = 500f;
+    const float _ACCELERATION = 400f;
     const float _BRAKE_STRENGTH = 1f;
     const float _STEERING_STRENGTH_GROUNDED = 2f;
     const float _STEERING_STRENGTH_INAIR = 1f;
@@ -20,8 +20,8 @@ public class PlayerController : MonoBehaviour {
     const float _DODGEFLIP_TORQUE = 4f;
     const float _FLIP_FORCE = 10f;
     const float _FLIP_TORQUE = 1f;
-    const float _FLIPPED_THRESHOLD = 0.5f;
-    const float _DODGE_FLIP_DURATION = 0.75f;
+    const float _FLIPPED_THRESHOLD = 0.9f;
+    const float _DODGE_FLIP_DURATION = 0.5f;
 
     const int _JUMPS_ALLOWED = 2;
 
@@ -40,6 +40,8 @@ public class PlayerController : MonoBehaviour {
 
     float _dodgeFlipDuration;
 
+    bool _movementDisabled = false;
+
     float _h;
     float _v;
     float _g;
@@ -54,6 +56,8 @@ public class PlayerController : MonoBehaviour {
 
     private void FixedUpdate() {
         HandleInputs();
+
+        if (_movementDisabled) return;
 
         float forwardValue = Input.GetAxis ("Gas") * _ACCELERATION;
         float backwardValue = Input.GetAxis("Brake") * _BRAKE_STRENGTH;
@@ -165,5 +169,13 @@ public class PlayerController : MonoBehaviour {
         if (collision.collider.tag == "Ground" || collision.collider.tag == "Goal") {
             _grounded = false;
         }
+    }
+
+    public void DisableMovement () {
+        _movementDisabled = true;
+    }
+
+    public void EnableMovement () {
+        _movementDisabled = false;
     }
 }

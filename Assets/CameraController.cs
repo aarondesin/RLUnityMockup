@@ -22,6 +22,11 @@ public class CameraController : MonoBehaviour {
 
         switch (_mode) {
             case Mode.Free:
+                Vector3 pos = PlayerController.Instance.transform.position -transform.forward * _CAMERA_XZ_OFFSET + transform.up * _CAMERA_HEIGHT;
+                pos.y = Mathf.Clamp (pos.y, _MIN_CAMERA_HEIGHT, Mathf.Infinity);
+
+                transform.position = pos;
+
                 var parent = transform.parent.rotation.eulerAngles;
                 transform.rotation = Quaternion.Euler (0f, parent.y, 0f);
                 break;
