@@ -9,8 +9,11 @@ public class Ball : MonoBehaviour {
 
     public static Ball Instance;
 
+    MeshRenderer _renderer;
+
     private void Awake() {
         Instance = this;
+        _renderer = GetComponent<MeshRenderer>();
     }
 
     private void OnTriggerEnter(Collider other) {
@@ -28,7 +31,16 @@ public class Ball : MonoBehaviour {
 
     void Explode () {
         PlayerController.Instance.GetComponent<Rigidbody>().AddExplosionForce (_EXPLOSION_FORCE, transform.position, _EXPLOSION_RADIUS);
-        Destroy(gameObject);
-        
+        //GetComponent<MeshRenderer>().enabled = false;
+        gameObject.SetActive(false);
     }
+
+    public void ResetBall() {
+        //_renderer.enabled = true;
+        //gameObject.SetActive(true);
+        GetComponent<Rigidbody>().velocity = Vector3.zero;
+        GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+        
+        //Debug.Log ("reset");
+    } 
 }
