@@ -28,8 +28,8 @@ public class PlayerController : MonoBehaviour {
 
     const float _MAX_BOOST = 100f;
     const float _INITIAL_BOOST = 30f;
-    const float _BOOST_USED_PER_SECOND = 33.34f;
-    const float _BOOST_FORCE = 2200f;
+    const float _BOOST_USED_PER_SECOND = 33.33f;
+    const float _BOOST_FORCE = 2100f;
 
     [SerializeField] ParticleSystem _boostPS;
     [SerializeField] Light _boostLight;
@@ -140,6 +140,8 @@ public class PlayerController : MonoBehaviour {
     public float Boost { get { return _boost; } }
 
     public float BoostPercentage { get { return _boost / _MAX_BOOST; } }
+
+    public Vector3 Velocity { get { return _rb.velocity; } }
 
     void HandleInputs() {
         if (Input.GetButtonDown("Jump")) AttemptJump();

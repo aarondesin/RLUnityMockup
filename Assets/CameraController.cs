@@ -7,10 +7,13 @@ public class CameraController : MonoBehaviour {
     const float _CAMERA_HEIGHT = 5f;
     const float _CAMERA_XZ_OFFSET = 12f;
     const float _MIN_CAMERA_HEIGHT = 5f;
+    const float _LAG = 0.95f;
 
     Mode _mode = Mode.BallCam;
 
     Vector3 _ballPos;
+
+    bool _inverted = false;
 
 	public enum Mode {
         Free,
@@ -28,7 +31,9 @@ public class CameraController : MonoBehaviour {
                 transform.position = pos;
 
                 var parent = transform.parent.rotation.eulerAngles;
-                transform.rotation = Quaternion.Euler (0f, parent.y, 0f);
+                transform.rotation = Quaternion.Euler (0f, parent.y + (_inverted ? 180f : 0f), 0f);
+                //Quaternion rot = Quaternion.LookRotation (PlayerController.Instance.Velocity, Vector3.up);
+                //transform.rotation = rot;
                 break;
             case Mode.BallCam:
 
@@ -44,8 +49,13 @@ public class CameraController : MonoBehaviour {
                     //playerPos.y + _CAMERA_HEIGHT,
                     Mathf.Clamp(playerPos.y + ballToPlayer.y * _CAMERA_XZ_OFFSET, _MIN_CAMERA_HEIGHT, Mathf.Infinity),
                     playerPos.z + ballToPlayer.z * _CAMERA_XZ_OFFSET);
-                transform.position = newPos;
-                transform.LookAt (_ballPos, Vector3.up);
+                Vector3 lerpedPos = Vector3.Lerp (transform.position, newPos, _LAG);
+                transform.position = lerpedPos;
+                var lookVector = _ballPos - transform.position * (_inverted ? -1f : 1f);
+                Quaternion newRot= Quaternion.LookRotation (lookVector);
+                Quaternion lerpedRot = Quaternion.Lerp (transform.rotation, newRot, _LAG);
+                //transform.LookAt (_ballPos, Vector3.up);
+                transform.rotation = lerpedRot;
                 break;
         }
     }
@@ -54,5 +64,7 @@ public class CameraController : MonoBehaviour {
         if (Input.GetButtonDown("ChangeCamera")) {
             _mode = (Mode)(1 - (int)_mode);
         }
+
+        _inverted = Input.GetButton ("InvertCamera");
     }
 }
