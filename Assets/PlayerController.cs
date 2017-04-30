@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour {
     const float _STEERING_STRENGTH_GROUNDED = 2.25f;
     const float _STEERING_STRENGTH_INAIR = 1f;
     const float _MAX_VELOCITY_UNBOOSTED = 40f;
+    const float _MAX_VELOCITY_BOOSTED = 50f;
     const float _PITCH_SPEED = 10f;
     const float _ROLL_SPEED = 10f;
     const float _YAW_SPEED = 10f;
@@ -28,6 +29,7 @@ public class PlayerController : MonoBehaviour {
     const float _MAX_BOOST = 100f;
     const float _INITIAL_BOOST = 30f;
     const float _BOOST_USED_PER_SECOND = 33.34f;
+    const float _BOOST_FORCE = 2200f;
 
     [SerializeField] ParticleSystem _boostPS;
     [SerializeField] Light _boostLight;
@@ -98,8 +100,9 @@ public class PlayerController : MonoBehaviour {
                 var force = forward * throttleValue;
 
                 _rb.AddForce(force, ForceMode.Acceleration);
-                if (_rb.velocity.magnitude > _MAX_VELOCITY_UNBOOSTED)
-                    _rb.velocity *= _MAX_VELOCITY_UNBOOSTED / _rb.velocity.magnitude;
+                float maxSpeed = _boosting ? _MAX_VELOCITY_BOOSTED : _MAX_VELOCITY_UNBOOSTED;
+                if (_rb.velocity.magnitude > maxSpeed)
+                    _rb.velocity *= maxSpeed / _rb.velocity.magnitude;
                 //_rb.MovePosition (transform.position + transform.forward * (_rb.velocity.magnitude + throttleValue * Time.fixedDeltaTime));
                 //_rb.velocity = transform.forward * (_rb.velocity.magnitude + throttleValue * Time.fixedDeltaTime);
             }
@@ -118,9 +121,6 @@ public class PlayerController : MonoBehaviour {
                 _rb.angularVelocity *= _ANGULAR_VELOCITY_DECAY;
             }
         }
-
-
-
 
         if (!_rb.detectCollisions) _rb.detectCollisions = true;
     }
@@ -213,9 +213,11 @@ public class PlayerController : MonoBehaviour {
         Debug.Log ("Boost");
         _boostPS.Play();
         _boosting = true;
-        float dBoost = _BOOST_USED_PER_SECOND * Time.deltaTime;
+        float dBoost = _BOOST_USED_PER_SECOND * Time.fixedDeltaTime;
         _boost = Mathf.Clamp (_boost - dBoost, 0f, _MAX_BOOST);
         _boostLight.gameObject.SetActive(true);
+        var boostForce = transform.forward * _BOOST_FORCE * Time.fixedDeltaTime;
+        _rb.AddForce (boostForce, ForceMode.Acceleration);
     }
 
     void EndBoost () {
