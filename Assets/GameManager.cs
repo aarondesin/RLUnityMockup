@@ -85,6 +85,7 @@ public class GameManager : MonoBehaviour {
         PlayerController.Instance.transform.rotation = PlayerSpawnPoint.Instance.transform.rotation;
         PlayerController.Instance.GetComponent<Rigidbody>().velocity = Vector3.zero;
         PlayerController.Instance.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+        PlayerController.Instance.ResetPlayer();
     }
 
     void ResetBall () {
@@ -92,6 +93,5 @@ public class GameManager : MonoBehaviour {
         Ball.Instance.transform.position = BallSpawnPoint.Instance.transform.position;
         Ball.Instance.transform.rotation = Quaternion.identity;
         Ball.Instance.ResetBall();
-        
     }
 }

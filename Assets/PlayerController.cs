@@ -18,18 +18,28 @@ public class PlayerController : MonoBehaviour {
     const float _DODGEFLIP_THRESHOLD = 0.5f;
     const float _DODGEFLIP_FORCE = 15f;
     const float _DODGEFLIP_TORQUE = 10f;
-    const float _FLIP_FORCE = 10f;
+    const float _FLIP_FORCE = 20f;
     const float _FLIP_TORQUE = 1f;
     const float _FLIPPED_THRESHOLD = 0.98f;
     const float _DODGE_FLIP_DURATION = 0.75f;
     const float _DODGE_FLIP_ANGULAR_VELOCITY_DECAY = 0.995f;
     const float _ANGULAR_VELOCITY_DECAY = 0.96f;
 
+    const float _MAX_BOOST = 100f;
+    const float _INITIAL_BOOST = 30f;
+    const float _BOOST_USED_PER_SECOND = 33.34f;
+
+    [SerializeField] ParticleSystem _boostPS;
+    [SerializeField] Light _boostLight;
+
+
+
     const int _JUMPS_ALLOWED = 2;
 
     public static PlayerController Instance;
 
     float _boost = 30f;
+    bool _boosting = false;
 
     UnityEvent onGround = new UnityEvent();
 
@@ -54,6 +64,8 @@ public class PlayerController : MonoBehaviour {
     private void Awake() {
         _rb = GetComponent<Rigidbody>();
         Instance = this;
+        _boostPS.Stop();
+        _boostLight.gameObject.SetActive(false);
     }
 
     private void FixedUpdate() {
@@ -75,7 +87,12 @@ public class PlayerController : MonoBehaviour {
                 var forward = Vector3.ProjectOnPlane(transform.forward, _groundNormal).normalized;
 
                 var v = _rb.velocity.magnitude;
-                if (Vector3.Dot (_rb.velocity, transform.forward) < 0f) v *= -1f;
+
+                var reverse = Vector3.Dot (_rb.velocity, transform.forward) < 0f;
+                if (reverse) {
+                    v *= -1f;
+                    steeringValue *= -1;
+                }
                 _rb.MoveRotation(transform.rotation * Quaternion.Euler(0f, steeringValue, 0f));
                 _rb.velocity = forward * v;
                 var force = forward * throttleValue;
@@ -120,9 +137,14 @@ public class PlayerController : MonoBehaviour {
 
     public bool Flipped { get { return _flipped; } }
 
+    public float Boost { get { return _boost; } }
+
+    public float BoostPercentage { get { return _boost / _MAX_BOOST; } }
+
     void HandleInputs() {
         if (Input.GetButtonDown("Jump")) AttemptJump();
         if (Input.GetButton("Boost")) AttemptBoost();
+        else if (_boosting) EndBoost();
         _h = Input.GetAxis("Horizontal");
         _v = -Input.GetAxis("Vertical");
         _g = Input.GetAxis("Gas");
@@ -182,7 +204,25 @@ public class PlayerController : MonoBehaviour {
     }
 
     void AttemptBoost() {
-        Debug.Log("Boost");
+        Debug.Log("AttemptBoost");
+        if (_boost > 0f) DoBoost();
+        else if (_boosting) EndBoost();
+    }
+
+    void DoBoost () {
+        Debug.Log ("Boost");
+        _boostPS.Play();
+        _boosting = true;
+        float dBoost = _BOOST_USED_PER_SECOND * Time.deltaTime;
+        _boost = Mathf.Clamp (_boost - dBoost, 0f, _MAX_BOOST);
+        _boostLight.gameObject.SetActive(true);
+    }
+
+    void EndBoost () {
+        Debug.Log ("EndBoost");
+        _boostPS.Stop();
+        _boosting = false;
+        _boostLight.gameObject.SetActive(false);
     }
 
     private void OnCollisionEnter(Collision collision) {
@@ -212,5 +252,13 @@ public class PlayerController : MonoBehaviour {
 
     public void EnableMovement() {
         _movementDisabled = false;
+    }
+
+    public void ResetPlayer () {
+        _boost = _INITIAL_BOOST;
+    }
+
+    public void GiveBoost (float boost) {
+        _boost = Mathf.Clamp (_boost + boost, 0f, _MAX_BOOST);
     }
 }
