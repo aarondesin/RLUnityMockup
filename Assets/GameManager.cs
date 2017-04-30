@@ -28,6 +28,10 @@ public class GameManager : MonoBehaviour {
         StartRound();
     } 
 
+    void Update () {
+        if (Input.GetButtonDown("Reset")) StartRound();
+    }
+
     public void RegisterGoal (Team team) {
         _score[team]++;
 
@@ -35,6 +39,7 @@ public class GameManager : MonoBehaviour {
     }
 
     void StartRound() {
+        StopAllCoroutines();
         StartCoroutine (DoStartRound());
     }
 
@@ -83,8 +88,6 @@ public class GameManager : MonoBehaviour {
     void ResetPlayer () {
         PlayerController.Instance.transform.position = PlayerSpawnPoint.Instance.transform.position;
         PlayerController.Instance.transform.rotation = PlayerSpawnPoint.Instance.transform.rotation;
-        PlayerController.Instance.GetComponent<Rigidbody>().velocity = Vector3.zero;
-        PlayerController.Instance.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
         PlayerController.Instance.ResetPlayer();
     }
 

@@ -11,9 +11,9 @@ public class PlayerController : MonoBehaviour {
     const float _STEERING_STRENGTH_INAIR = 1f;
     const float _MAX_VELOCITY_UNBOOSTED = 40f;
     const float _MAX_VELOCITY_BOOSTED = 50f;
-    const float _PITCH_SPEED = 10f;
-    const float _ROLL_SPEED = 10f;
-    const float _YAW_SPEED = 10f;
+    const float _PITCH_SPEED = 8f;
+    const float _ROLL_SPEED = 8f;
+    const float _YAW_SPEED = 8f;
 
     const float _JUMP_FORCE = 15f;
     const float _DODGEFLIP_THRESHOLD = 0.5f;
@@ -234,13 +234,14 @@ public class PlayerController : MonoBehaviour {
             _flipped = Vector3.Dot(collision.contacts[0].normal, transform.up) < _FLIPPED_THRESHOLD;
             _grounded = true;
             _jumpsLeft = _JUMPS_ALLOWED;
-            _groundNormal = collision.contacts[0].normal;
+            _groundNormal = AverageContactNormal(collision.contacts);
         }
     }
 
     private void OnCollisionStay(Collision collision) {
         if (_grounded) {
             _flipped = Vector3.Dot(collision.contacts[0].normal, transform.up) < _FLIPPED_THRESHOLD;
+            _groundNormal = AverageContactNormal(collision.contacts);
         }
     }
 
@@ -248,6 +249,12 @@ public class PlayerController : MonoBehaviour {
         if (collision.collider.tag == "Ground" || collision.collider.tag == "Goal") {
             _grounded = false;
         }
+    }
+
+    private void OnDrawGizmos() {
+        Gizmos.color = Color.green;
+        Gizmos.DrawRay (transform.position, _groundNormal * 5f);
+        Gizmos.DrawRay (transform.position, Vector3.ProjectOnPlane (transform.forward, _groundNormal) * 5f);
     }
 
     public void DisableMovement() {
@@ -260,9 +267,19 @@ public class PlayerController : MonoBehaviour {
 
     public void ResetPlayer () {
         _boost = _INITIAL_BOOST;
+        _rb.velocity = Vector3.zero;
+        _rb.angularVelocity = Vector3.zero;
     }
 
     public void GiveBoost (float boost) {
         _boost = Mathf.Clamp (_boost + boost, 0f, _MAX_BOOST);
+    }
+
+    Vector3 AverageContactNormal (ContactPoint[] contacts) {
+        Vector3 result = Vector3.zero;
+        for (int i = 0; i < contacts.Length; i++) {
+            result += contacts[i].normal;
+        }
+        return result /= (float)contacts.Length;
     }
 }

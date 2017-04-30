@@ -23,12 +23,14 @@ public class CameraController : MonoBehaviour {
     private void Update() {
         HandleInputs();
 
+        Vector3 lerpedPos;
+
         switch (_mode) {
             case Mode.Free:
                 Vector3 pos = PlayerController.Instance.transform.position -transform.forward * _CAMERA_XZ_OFFSET + transform.up * _CAMERA_HEIGHT;
                 pos.y = Mathf.Clamp (pos.y, _MIN_CAMERA_HEIGHT, Mathf.Infinity);
-
-                transform.position = pos;
+                lerpedPos = Vector3.Lerp (pos, transform.position, _LAG);
+                transform.position = lerpedPos;
 
                 var parent = transform.parent.rotation.eulerAngles;
                 transform.rotation = Quaternion.Euler (0f, parent.y + (_inverted ? 180f : 0f), 0f);
@@ -47,9 +49,9 @@ public class CameraController : MonoBehaviour {
                 Vector3 newPos = new Vector3 (
                     playerPos.x + ballToPlayer.x * _CAMERA_XZ_OFFSET,
                     //playerPos.y + _CAMERA_HEIGHT,
-                    Mathf.Clamp(playerPos.y + ballToPlayer.y * _CAMERA_XZ_OFFSET, _MIN_CAMERA_HEIGHT, Mathf.Infinity),
+                    Mathf.Clamp(playerPos.y + ballToPlayer.y * _CAMERA_XZ_OFFSET, CameraYBoundary.Instance.transform.position.y, Mathf.Infinity),
                     playerPos.z + ballToPlayer.z * _CAMERA_XZ_OFFSET);
-                Vector3 lerpedPos = Vector3.Lerp (transform.position, newPos, _LAG);
+                lerpedPos = Vector3.Lerp (transform.position, newPos, _LAG);
                 transform.position = lerpedPos;
                 var lookVector = _ballPos - transform.position * (_inverted ? -1f : 1f);
                 Quaternion newRot= Quaternion.LookRotation (lookVector);
