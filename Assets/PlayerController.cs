@@ -9,8 +9,8 @@ public class PlayerController : MonoBehaviour {
     const float _BRAKE_STRENGTH = 200f;
     const float _STEERING_STRENGTH_GROUNDED = 2.25f;
     const float _STEERING_STRENGTH_INAIR = 1f;
-    const float _MAX_VELOCITY_UNBOOSTED = 40f;
-    const float _MAX_VELOCITY_BOOSTED = 50f;
+    const float _MAX_VELOCITY_UNBOOSTED = 60f;
+    const float _MAX_VELOCITY_BOOSTED = 80f;
     const float _PITCH_SPEED = 8f;
     const float _ROLL_SPEED = 8f;
     const float _YAW_SPEED = 8f;
@@ -30,6 +30,8 @@ public class PlayerController : MonoBehaviour {
     const float _INITIAL_BOOST = 30f;
     const float _BOOST_USED_PER_SECOND = 33.33f;
     const float _BOOST_FORCE = 2100f;
+
+    const float _GROUND_RAYCAST_DIST = 0.2f;
 
     [SerializeField] ParticleSystem _boostPS;
     [SerializeField] Light _boostLight;
@@ -79,9 +81,15 @@ public class PlayerController : MonoBehaviour {
         float backwardValue = _b * _BRAKE_STRENGTH;
 
         float throttleValue = forwardValue - backwardValue;
+
+        float speedCap = _boosting ? _MAX_VELOCITY_BOOSTED : _MAX_VELOCITY_UNBOOSTED;
         
         float steeringMultiplier = _grounded ? (_flipped ? 0f : _STEERING_STRENGTH_GROUNDED) : _STEERING_STRENGTH_INAIR;
-        float steeringValue = Input.GetAxis("Horizontal") * steeringMultiplier * Mathf.Clamp01(_rb.velocity.magnitude / _MAX_VELOCITY_UNBOOSTED);
+        float steeringValue = Input.GetAxis("Horizontal") * steeringMultiplier * Mathf.Sqrt (Mathf.Clamp01(_rb.velocity.magnitude / speedCap));
+
+        //if (!_grounded && Physics.Raycast(transform.position, -transform.up, _GROUND_RAYCAST_DIST)) _grounded = true;
+
+
         if (_grounded) {
             if (!_flipped) {
                 //_rb.MovePosition (transform.forward * throttleValue * Time.fixedDeltaTime);
@@ -99,10 +107,12 @@ public class PlayerController : MonoBehaviour {
                 _rb.velocity = forward * v;
                 var force = forward * throttleValue;
 
-                _rb.AddForce(force, ForceMode.Acceleration);
-                float maxSpeed = _boosting ? _MAX_VELOCITY_BOOSTED : _MAX_VELOCITY_UNBOOSTED;
-                if (_rb.velocity.magnitude > maxSpeed)
-                    _rb.velocity *= maxSpeed / _rb.velocity.magnitude;
+                if (_rb.velocity.magnitude < speedCap - force.magnitude * Time.fixedDeltaTime) _rb.AddForce(force, ForceMode.Acceleration);
+                /*if (_rb.velocity.magnitude > speedCap) {
+                    Debug.Log ("Above speed cap!");
+                    float dSpeed = _rb.velocity.magnitude - speedCap * Time.fixedDeltaTime;
+                    _rb.velocity -= _rb.velocity.normalized * dSpeed;
+                }*/
                 //_rb.MovePosition (transform.position + transform.forward * (_rb.velocity.magnitude + throttleValue * Time.fixedDeltaTime));
                 //_rb.velocity = transform.forward * (_rb.velocity.magnitude + throttleValue * Time.fixedDeltaTime);
             }
@@ -235,6 +245,7 @@ public class PlayerController : MonoBehaviour {
             _grounded = true;
             _jumpsLeft = _JUMPS_ALLOWED;
             _groundNormal = AverageContactNormal(collision.contacts);
+            Debug.Log ("Landed");
         }
     }
 
@@ -242,12 +253,14 @@ public class PlayerController : MonoBehaviour {
         if (_grounded) {
             _flipped = Vector3.Dot(collision.contacts[0].normal, transform.up) < _FLIPPED_THRESHOLD;
             _groundNormal = AverageContactNormal(collision.contacts);
+
         }
     }
 
     private void OnCollisionExit(Collision collision) {
         if (collision.collider.tag == "Ground" || collision.collider.tag == "Goal") {
             _grounded = false;
+            Debug.Log ("TookOff");
         }
     }
 
@@ -255,6 +268,7 @@ public class PlayerController : MonoBehaviour {
         Gizmos.color = Color.green;
         Gizmos.DrawRay (transform.position, _groundNormal * 5f);
         Gizmos.DrawRay (transform.position, Vector3.ProjectOnPlane (transform.forward, _groundNormal) * 5f);
+        Gizmos.DrawRay (transform.position, -transform.up * _GROUND_RAYCAST_DIST);
     }
 
     public void DisableMovement() {

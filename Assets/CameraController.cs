@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour {
 
-    const float _CAMERA_HEIGHT = 5f;
+    const float _CAMERA_HEIGHT = 3f;
     const float _CAMERA_XZ_OFFSET = 12f;
-    const float _MIN_CAMERA_HEIGHT = 5f;
+    const float _MIN_CAMERA_HEIGHT = 3f;
     const float _LAG = 0.9f;
 
     Mode _mode = Mode.BallCam;
@@ -44,7 +44,7 @@ public class CameraController : MonoBehaviour {
                 Vector3 playerPos = PlayerController.Instance.transform.position;
                 
                 Vector3 ballToPlayer = playerPos - _ballPos;
-                //ballToPlayer.y = 0f;
+                ballToPlayer.y = 0f;
                 ballToPlayer = ballToPlayer.normalized;
                 float raycastY = -Mathf.Infinity;
                 RaycastHit hit;
