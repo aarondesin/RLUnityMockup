@@ -5,7 +5,7 @@ using UnityEngine;
 public class CameraController : MonoBehaviour {
 
     const float _CAMERA_HEIGHT = 3f;
-    const float _CAMERA_XZ_OFFSET = 12f;
+    const float _CAMERA_XZ_OFFSET = 15f;
     const float _MIN_CAMERA_HEIGHT = 3f;
     const float _LAG = 0.9f;
 

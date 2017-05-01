@@ -19,7 +19,7 @@ public class PlayerController : MonoBehaviour {
     const float _DODGEFLIP_THRESHOLD = 0.5f;
     const float _DODGEFLIP_FORCE = 15f;
     const float _DODGEFLIP_TORQUE = 10f;
-    const float _FLIP_FORCE = 20f;
+    const float _FLIP_FORCE = 15f;
     const float _FLIP_TORQUE = 1f;
     const float _FLIPPED_THRESHOLD = 0.98f;
     const float _DODGE_FLIP_DURATION = 0.75f;
@@ -115,6 +115,8 @@ public class PlayerController : MonoBehaviour {
                 }*/
                 //_rb.MovePosition (transform.position + transform.forward * (_rb.velocity.magnitude + throttleValue * Time.fixedDeltaTime));
                 //_rb.velocity = transform.forward * (_rb.velocity.magnitude + throttleValue * Time.fixedDeltaTime);
+            } else {
+                _rb.angularVelocity *= _ANGULAR_VELOCITY_DECAY;
             }
         } else {
             if (_dodgeFlipDuration > 0f) {
