@@ -7,7 +7,7 @@ public class PlayerController : MonoBehaviour {
 
     const float _ACCELERATION = 200f;
     const float _BRAKE_STRENGTH = 200f;
-    const float _STEERING_STRENGTH_GROUNDED = 2.25f;
+    const float _STEERING_STRENGTH_GROUNDED = 2.5f;
     const float _STEERING_STRENGTH_INAIR = 1f;
     const float _MAX_VELOCITY_UNBOOSTED = 60f;
     const float _MAX_VELOCITY_BOOSTED = 80f;
@@ -36,11 +36,11 @@ public class PlayerController : MonoBehaviour {
     [SerializeField] ParticleSystem _boostPS;
     [SerializeField] Light _boostLight;
 
-
-
-    const int _JUMPS_ALLOWED = 2;
+    [SerializeField] GameManager.Team _team;
 
     public static PlayerController Instance;
+
+    const int _JUMPS_ALLOWED = 2;
 
     float _boost = 30f;
     bool _boosting = false;
@@ -67,15 +67,15 @@ public class PlayerController : MonoBehaviour {
 
     private void Awake() {
         _rb = GetComponent<Rigidbody>();
-        Instance = this;
         _boostPS.Stop();
         _boostLight.gameObject.SetActive(false);
+        Instance = this;
     }
 
     private void FixedUpdate() {
-        HandleInputs();
-
         if (_movementDisabled) return;
+
+        HandleInputs();
 
         float forwardValue = _g * _ACCELERATION;
         float backwardValue = _b * _BRAKE_STRENGTH;

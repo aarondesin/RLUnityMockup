@@ -9,8 +9,8 @@ public class GameManager : MonoBehaviour {
     const float _POST_GOAL_DELAY = 3f;
 
     public enum Team {
-        Orange,
-        Blue
+        Orange = 0,
+        Purple = 1
     }
 
 	Dictionary<Team, int> _score = new Dictionary<Team, int>();
@@ -20,7 +20,7 @@ public class GameManager : MonoBehaviour {
     private void Awake() {
         Instance= this;
         _score.Add (Team.Orange, 0);
-        _score.Add (Team.Blue, 0);
+        _score.Add (Team.Purple, 0);
     }
 
     private void Start() {
@@ -29,13 +29,13 @@ public class GameManager : MonoBehaviour {
     } 
 
     void Update () {
-        if (Input.GetButtonDown("Reset")) StartRound();
+        //if (Input.GetButtonDown("Reset")) StartRound();
     }
 
     public void RegisterGoal (Team team) {
         _score[team]++;
 
-        StartCoroutine (DoEndRound());
+        StartCoroutine (DoEndRound(team));
     }
 
     void StartRound() {
@@ -73,10 +73,10 @@ public class GameManager : MonoBehaviour {
         yield break;
     }
 
-    IEnumerator DoEndRound () {
+    IEnumerator DoEndRound (Team winner) {
         if (!Application.isEditor) {
             Countdown.Instance.gameObject.SetActive(true);
-            Countdown.Instance.SetText ("You scored!");
+            Countdown.Instance.SetText (winner.ToString() + " scored!");
 
             yield return new WaitForSeconds (_POST_GOAL_DELAY);
 
