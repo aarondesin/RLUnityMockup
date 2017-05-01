@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour {
     const float _ROLL_SPEED = 8f;
     const float _YAW_SPEED = 8f;
 
-    const float _JUMP_FORCE = 15f;
+    const float _JUMP_FORCE = 20f;
     const float _DODGEFLIP_THRESHOLD = 0.5f;
     const float _DODGEFLIP_FORCE = 15f;
     const float _DODGEFLIP_TORQUE = 10f;

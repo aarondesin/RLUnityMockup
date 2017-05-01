@@ -7,7 +7,7 @@ public class CameraController : MonoBehaviour {
     const float _CAMERA_HEIGHT = 5f;
     const float _CAMERA_XZ_OFFSET = 12f;
     const float _MIN_CAMERA_HEIGHT = 5f;
-    const float _LAG = 0.95f;
+    const float _LAG = 0.9f;
 
     Mode _mode = Mode.BallCam;
 
@@ -46,10 +46,23 @@ public class CameraController : MonoBehaviour {
                 Vector3 ballToPlayer = playerPos - _ballPos;
                 //ballToPlayer.y = 0f;
                 ballToPlayer = ballToPlayer.normalized;
+                float raycastY = -Mathf.Infinity;
+                RaycastHit hit;
+                if (Physics.Raycast (transform.position, Vector3.down, out hit, Mathf.Infinity)) {
+                    raycastY = hit.point.y + _CAMERA_HEIGHT;
+                }
+
+                float extrapolatedY = playerPos.y + ballToPlayer.y * _CAMERA_XZ_OFFSET;
+                float y = extrapolatedY;
+                //float y = Mathf.Max (extrapolatedY, raycastY);
+
+                //float yBound = Mathf.Max (CameraYBoundary.Instance.transform.position.y, );
+                float yBound = Mathf.Max (extrapolatedY + _CAMERA_HEIGHT, raycastY);
+
                 Vector3 newPos = new Vector3 (
                     playerPos.x + ballToPlayer.x * _CAMERA_XZ_OFFSET,
                     //playerPos.y + _CAMERA_HEIGHT,
-                    Mathf.Clamp(playerPos.y + ballToPlayer.y * _CAMERA_XZ_OFFSET, CameraYBoundary.Instance.transform.position.y, Mathf.Infinity),
+                    Mathf.Clamp(extrapolatedY, yBound, Mathf.Infinity),
                     playerPos.z + ballToPlayer.z * _CAMERA_XZ_OFFSET);
                 lerpedPos = Vector3.Lerp (transform.position, newPos, _LAG);
                 transform.position = lerpedPos;

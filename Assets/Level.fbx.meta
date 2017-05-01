@@ -37,14 +37,17 @@ ModelImporter:
     2300002: pSphere3
     2300004: pSphere6
     2300006: pSphere8
+    2300008: pSphere4
     3300000: pSphere2
     3300002: pSphere3
     3300004: pSphere6
     3300006: pSphere8
+    3300008: pSphere4
     4300000: pSphere2
     4300002: pSphere3
     4300004: pSphere6
     4300006: pSphere8
+    4300008: pSphere4
     9500000: //RootNode
   materials:
     importMaterials: 1
