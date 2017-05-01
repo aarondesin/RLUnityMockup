@@ -1,62 +1,41 @@
 fileFormatVersion: 2
-guid: 170dfa3aeb1947d468fcff535308f9c5
-timeCreated: 1493580442
+guid: 4a8a6ffb1aa92cf4f88522e2874c9216
+timeCreated: 1493663144
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
     100000: //RootNode
-    100002: pCube1
-    100004: pSphere1
-    100006: pSphere2
-    100008: pSphere3
-    100010: transform1
-    100012: transform2
-    100014: pSphere4
-    100016: pSphere5
-    100018: pSphere6
-    100020: transform3
-    100022: transform4
-    100024: pSphere7
-    100026: pSphere8
-    100028: pCube2
-    100030: pCube3
-    100032: pCube4
+    100002: pSphere2
+    100004: pSphere3
+    100006: pSphere4
+    100008: transform1
+    100010: transform2
+    100012: pCube2
+    100014: pCube3
+    100016: pCube4
+    100018: transform3
+    100020: transform4
     400000: //RootNode
-    400002: pCube1
-    400004: pSphere1
-    400006: pSphere2
-    400008: pSphere3
-    400010: transform1
-    400012: transform2
-    400014: pSphere4
-    400016: pSphere5
-    400018: pSphere6
-    400020: transform3
-    400022: transform4
-    400024: pSphere7
-    400026: pSphere8
-    400028: pCube2
-    400030: pCube3
-    400032: pCube4
-    2300000: pSphere2
-    2300002: pSphere3
-    2300004: pSphere6
-    2300006: pSphere8
-    2300008: pSphere4
-    2300010: pCube4
-    3300000: pSphere2
-    3300002: pSphere3
-    3300004: pSphere6
-    3300006: pSphere8
-    3300008: pSphere4
-    3300010: pCube4
-    4300000: pSphere2
-    4300002: pSphere3
-    4300004: pSphere6
-    4300006: pSphere8
-    4300008: pSphere4
-    4300010: pCube4
+    400002: pSphere2
+    400004: pSphere3
+    400006: pSphere4
+    400008: transform1
+    400010: transform2
+    400012: pCube2
+    400014: pCube3
+    400016: pCube4
+    400018: transform3
+    400020: transform4
+    2300000: pSphere4
+    2300002: pCube2
+    2300004: pCube4
+    3300000: pSphere4
+    3300002: pCube2
+    3300004: pCube4
+    4300000: pSphere4
+    4300002: pCube2
+    4300004: pCube4
     9500000: //RootNode
   materials:
     importMaterials: 1
