@@ -33,7 +33,8 @@ public class Ball : MonoBehaviour {
     }
 
     void Explode () {
-        PlayerController.Instance.GetComponent<Rigidbody>().AddExplosionForce (_EXPLOSION_FORCE, transform.position, _EXPLOSION_RADIUS, 1f, ForceMode.Impulse);
+        foreach (var player in GameManager.Instance.Players)
+            player.GetComponent<Rigidbody>().AddExplosionForce (_EXPLOSION_FORCE, transform.position, _EXPLOSION_RADIUS, 1f, ForceMode.Impulse);
         _renderer.enabled = false;
         foreach (var ps in _explosionEffects) ps.Play();
         

@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour {
 
-    const float _CAMERA_HEIGHT = 5f;
-    const float _CAMERA_XZ_OFFSET = 15f;
-    const float _MIN_CAMERA_HEIGHT = 5f;
+    const float _CAMERA_HEIGHT = 4f;
+    const float _CAMERA_XZ_OFFSET = 12f;
+    const float _MIN_CAMERA_HEIGHT = 4f;
     const float _LAG = 0.9f;
 
     Mode _mode = Mode.BallCam;
@@ -15,9 +15,21 @@ public class CameraController : MonoBehaviour {
 
     bool _inverted = false;
 
+    Camera _camera;
+
+    int _playerID;
+    string _playerIDStr;
+
+    PlayerController _player;
+
 	public enum Mode {
         Free,
         BallCam
+    }
+
+    private void Awake() {
+        _camera = GetComponent<Camera>();
+        _player = GetComponentInParent<PlayerController>();
     }
 
     private void Update() {
@@ -27,7 +39,7 @@ public class CameraController : MonoBehaviour {
 
         switch (_mode) {
             case Mode.Free:
-                Vector3 pos = PlayerController.Instance.transform.position -transform.forward * _CAMERA_XZ_OFFSET + transform.up * _CAMERA_HEIGHT;
+                Vector3 pos = _player.transform.position -transform.forward * _CAMERA_XZ_OFFSET + transform.up * _CAMERA_HEIGHT;
                 pos.y = Mathf.Clamp (pos.y, _MIN_CAMERA_HEIGHT, Mathf.Infinity);
                 lerpedPos = Vector3.Lerp (pos, transform.position, _LAG);
                 transform.position = lerpedPos;
@@ -41,7 +53,7 @@ public class CameraController : MonoBehaviour {
 
                 if (Ball.Instance != null)
                     _ballPos = Ball.Instance.transform.position;
-                Vector3 playerPos = PlayerController.Instance.transform.position;
+                Vector3 playerPos = _player.transform.position;
                 
                 Vector3 ballToPlayer = playerPos - _ballPos;
                 ballToPlayer.y = 0f;
@@ -76,10 +88,19 @@ public class CameraController : MonoBehaviour {
     }
 
     void HandleInputs () {
-        if (Input.GetButtonDown("ChangeCamera")) {
+        if (Input.GetButtonDown("ChangeCamera" + _playerIDStr)) {
             _mode = (Mode)(1 - (int)_mode);
         }
 
-        _inverted = Input.GetButton ("InvertCamera");
+        _inverted = Input.GetButton ("InvertCamera" + _playerIDStr);
+    }
+
+    public void AssignScreenRect (Rect screenRect) {
+        _camera.pixelRect = screenRect;
+    }
+
+    public void AssignPlayerID (int id) {
+        _playerID = id;
+        _playerIDStr = id.ToString();
     }
 }

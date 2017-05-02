@@ -12,7 +12,7 @@ public class PlayerController : MonoBehaviour {
     const float _MAX_VELOCITY_UNBOOSTED = 60f;
     const float _MAX_VELOCITY_BOOSTED = 80f;
     const float _PITCH_SPEED = 8f;
-    const float _ROLL_SPEED = 8f;
+    const float _ROLL_SPEED = 20f;
     const float _YAW_SPEED = 8f;
 
     const float _JUMP_FORCE = 20f;
@@ -38,8 +38,6 @@ public class PlayerController : MonoBehaviour {
 
     [SerializeField] GameManager.Team _team;
 
-    public static PlayerController Instance;
-
     const int _JUMPS_ALLOWED = 2;
 
     float _boost = 30f;
@@ -58,6 +56,9 @@ public class PlayerController : MonoBehaviour {
 
     bool _movementDisabled = false;
 
+    int _playerID;
+    string _playerIDStr;
+
     float _h;
     float _v;
     float _g;
@@ -65,11 +66,13 @@ public class PlayerController : MonoBehaviour {
 
     Rigidbody _rb;
 
+    CameraController _camera;
+
     private void Awake() {
         _rb = GetComponent<Rigidbody>();
         _boostPS.Stop();
         _boostLight.gameObject.SetActive(false);
-        Instance = this;
+        _camera = GetComponentInChildren<CameraController>();
     }
 
     private void FixedUpdate() {
@@ -85,7 +88,7 @@ public class PlayerController : MonoBehaviour {
         float speedCap = _boosting ? _MAX_VELOCITY_BOOSTED : _MAX_VELOCITY_UNBOOSTED;
         
         float steeringMultiplier = _grounded ? (_flipped ? 0f : _STEERING_STRENGTH_GROUNDED) : _STEERING_STRENGTH_INAIR;
-        float steeringValue = Input.GetAxis("Horizontal") * steeringMultiplier * Mathf.Sqrt (Mathf.Clamp01(_rb.velocity.magnitude / speedCap));
+        float steeringValue = Input.GetAxis("Horizontal" + _playerIDStr) * steeringMultiplier * Mathf.Sqrt (Mathf.Clamp01(_rb.velocity.magnitude / speedCap));
 
         //if (!_grounded && Physics.Raycast(transform.position, -transform.up, _GROUND_RAYCAST_DIST)) _grounded = true;
 
@@ -127,8 +130,12 @@ public class PlayerController : MonoBehaviour {
                     _rb.useGravity = true;
                 }
             } else {
-                _rb.AddTorque(transform.up * _YAW_SPEED * _h, ForceMode.Acceleration);
                 _rb.AddTorque(transform.right * _PITCH_SPEED * _v, ForceMode.Acceleration);
+                if (Input.GetButton ("Roll" + _playerIDStr))
+                    _rb.AddTorque (transform.forward * _ROLL_SPEED * -_h, ForceMode.Acceleration);
+                else 
+                    _rb.AddTorque(transform.up * _YAW_SPEED * _h, ForceMode.Acceleration);
+                
 
                 _rb.angularVelocity *= _ANGULAR_VELOCITY_DECAY;
             }
@@ -155,14 +162,20 @@ public class PlayerController : MonoBehaviour {
 
     public Vector3 Velocity { get { return _rb.velocity; } }
 
+    public CameraController Camera { get { return _camera; } }
+
+    public GameManager.Team Team { get { return _team; } }
+
     void HandleInputs() {
-        if (Input.GetButtonDown("Jump")) AttemptJump();
-        if (Input.GetButton("Boost")) AttemptBoost();
+        if (Input.GetButtonDown("Jump" + _playerIDStr)) AttemptJump();
+        if (Input.GetButton("Boost" + _playerIDStr)) AttemptBoost();
         else if (_boosting) EndBoost();
-        _h = Input.GetAxis("Horizontal");
-        _v = -Input.GetAxis("Vertical");
-        _g = Input.GetAxis("Gas");
-        _b = Input.GetAxis("Brake");
+        _h = Input.GetAxis("Horizontal" + _playerIDStr);
+        _v = -Input.GetAxis("Vertical" + _playerIDStr);
+        _g = Input.GetAxis("Gas" + _playerIDStr);
+        _b = Input.GetAxis("Brake" + _playerIDStr);
+
+        //Debug.Log (_playerIDStr + " " + _g.ToString() + " " + _b.ToString());
     }
 
     void AttemptJump() {
@@ -297,5 +310,10 @@ public class PlayerController : MonoBehaviour {
             result += contacts[i].normal;
         }
         return result /= (float)contacts.Length;
+    }
+
+    public void AssignPlayerID (int id) {
+        _playerID = id;
+        _playerIDStr = id.ToString();
     }
 }
