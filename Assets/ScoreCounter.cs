@@ -14,6 +14,7 @@ public class ScoreCounter : MonoBehaviour {
     }
 
     private void Start() {
+        GameManager.Instance.onGameStarted.AddListener (Refresh);
         GameManager.Instance.onGoalScored.AddListener (Refresh);
         _text.text = 0.ToString();
     }

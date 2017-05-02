@@ -22,6 +22,7 @@ public class GameManager : MonoBehaviour {
     public static GameManager Instance;
 
     public UnityEvent onGoalScored = new UnityEvent();
+    public UnityEvent onGameStarted = new UnityEvent();
 
     float _matchTimer;
     bool _timerRunning = false;
@@ -78,6 +79,9 @@ public class GameManager : MonoBehaviour {
         _matchTimer = _MATCH_TIME;
         _score[Team.Blue] = 0;
         _score[Team.Orange] = 0;
+
+        onGameStarted.Invoke();
+
         StartRound();
     }
 

@@ -22,6 +22,10 @@ ModelImporter:
     100028: pCube2
     100030: pCube3
     100032: pCube4
+    100034: pCube5
+    100036: pCube6
+    100038: transform5
+    100040: transform6
     400000: //RootNode
     400002: pCube1
     400004: pSphere1
@@ -39,24 +43,31 @@ ModelImporter:
     400028: pCube2
     400030: pCube3
     400032: pCube4
+    400034: pCube5
+    400036: pCube6
+    400038: transform5
+    400040: transform6
     2300000: pSphere2
     2300002: pSphere3
     2300004: pSphere6
     2300006: pSphere8
     2300008: pSphere4
     2300010: pCube4
+    2300012: pCube6
     3300000: pSphere2
     3300002: pSphere3
     3300004: pSphere6
     3300006: pSphere8
     3300008: pSphere4
     3300010: pCube4
+    3300012: pCube6
     4300000: pSphere2
     4300002: pSphere3
     4300004: pSphere6
     4300006: pSphere8
     4300008: pSphere4
     4300010: pCube4
+    4300012: pCube6
     9500000: //RootNode
   materials:
     importMaterials: 1

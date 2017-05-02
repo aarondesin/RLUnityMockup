@@ -5,12 +5,12 @@ using UnityEngine.Events;
 
 public class PlayerController : MonoBehaviour {
 
-    const float _ACCELERATION = 200f;
-    const float _BRAKE_STRENGTH = 200f;
-    const float _STEERING_STRENGTH_GROUNDED = 2.5f;
+    const float _ACCELERATION = 75f;
+    const float _BRAKE_STRENGTH = 75f;
+    const float _STEERING_STRENGTH_GROUNDED = 3f;
     const float _STEERING_STRENGTH_INAIR = 1f;
-    const float _MAX_VELOCITY_UNBOOSTED = 60f;
-    const float _MAX_VELOCITY_BOOSTED = 80f;
+    const float _MAX_VELOCITY_UNBOOSTED = 50f;
+    const float _MAX_VELOCITY_BOOSTED = 75f;
     const float _PITCH_SPEED = 8f;
     const float _ROLL_SPEED = 20f;
     const float _YAW_SPEED = 8f;
