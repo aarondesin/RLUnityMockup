@@ -29,14 +29,22 @@ public class PlayerController : MonoBehaviour {
     const float _MAX_BOOST = 100f;
     const float _INITIAL_BOOST = 30f;
     const float _BOOST_USED_PER_SECOND = 33.33f;
-    const float _BOOST_FORCE = 2100f;
+    const float _BOOST_FORCE = 2500f;
 
     const float _GROUND_RAYCAST_DIST = 0.2f;
 
+    const float _ENGINE_MAX_PITCH = 1.1f;
+    const float _ENGINE_MIN_PITCH = 0.0f;
+
     [SerializeField] ParticleSystem _boostPS;
     [SerializeField] Light _boostLight;
+    AudioSource _boostAudio;
+    AudioSource _engineAudio;
 
     [SerializeField] GameManager.Team _team;
+
+    [SerializeField] AudioClip _impactSound;
+    [SerializeField] AudioClip _jumpSound;
 
     const int _JUMPS_ALLOWED = 2;
 
@@ -73,6 +81,9 @@ public class PlayerController : MonoBehaviour {
         _boostPS.Stop();
         _boostLight.gameObject.SetActive(false);
         _camera = GetComponentInChildren<CameraController>();
+        _engineAudio = GetComponent<AudioSource>();
+        _boostAudio = _boostPS.GetComponent<AudioSource>();
+        _boostAudio.Stop();
     }
 
     private void FixedUpdate() {
@@ -141,6 +152,8 @@ public class PlayerController : MonoBehaviour {
             }
         }
 
+        _engineAudio.pitch = _rb.velocity.magnitude / _MAX_VELOCITY_UNBOOSTED * (_ENGINE_MAX_PITCH - _ENGINE_MIN_PITCH) + _ENGINE_MIN_PITCH;
+
         if (!_rb.detectCollisions) _rb.detectCollisions = true;
     }
 
@@ -197,6 +210,7 @@ public class PlayerController : MonoBehaviour {
         _rb.MovePosition(transform.position + transform.up * _JUMP_FORCE * Time.fixedDeltaTime);
         _rb.detectCollisions = false;
         _jumpsLeft--;
+        _engineAudio.PlayOneShot (_jumpSound);
     }
 
     void Flip() {
@@ -210,6 +224,7 @@ public class PlayerController : MonoBehaviour {
         _rb.AddTorque(forward * _FLIP_FORCE * flipFactor, ForceMode.VelocityChange);
         _rb.detectCollisions = false;
         _jumpsLeft--;
+        _engineAudio.PlayOneShot (_jumpSound);
     }
 
     void DodgeFlip() {
@@ -228,6 +243,7 @@ public class PlayerController : MonoBehaviour {
         _rb.useGravity = false;
         _dodgeFlipDuration = _DODGE_FLIP_DURATION;
         _jumpsLeft--;
+        _engineAudio.PlayOneShot (_jumpSound);
     }
 
     void AttemptBoost() {
@@ -239,6 +255,8 @@ public class PlayerController : MonoBehaviour {
     void DoBoost () {
         Debug.Log ("Boost");
         _boostPS.Play();
+        if (!_boostAudio.isPlaying)
+            _boostAudio.Play();
         _boosting = true;
         float dBoost = _BOOST_USED_PER_SECOND * Time.fixedDeltaTime;
         _boost = Mathf.Clamp (_boost - dBoost, 0f, _MAX_BOOST);
@@ -252,6 +270,7 @@ public class PlayerController : MonoBehaviour {
         _boostPS.Stop();
         _boosting = false;
         _boostLight.gameObject.SetActive(false);
+        _boostAudio.Stop();
     }
 
     private void OnCollisionEnter(Collision collision) {
@@ -261,6 +280,8 @@ public class PlayerController : MonoBehaviour {
             _jumpsLeft = _JUMPS_ALLOWED;
             _groundNormal = AverageContactNormal(collision.contacts);
             Debug.Log ("Landed");
+            _engineAudio.PlayOneShot (_impactSound);
+
         }
     }
 

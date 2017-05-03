@@ -12,9 +12,13 @@ public class BoostPickup : MonoBehaviour {
     bool _enabled = true;
 
     [SerializeField] GameObject _boostEffect;
+    [SerializeField] AudioClip _collectSound;
+
+    AudioSource _audioSource;
 
 	void Awake () {
         _collider = GetComponentInChildren<Collider>();
+        _audioSource= GetComponent<AudioSource>();
     }
 
     IEnumerator WaitForReenable () {
@@ -30,6 +34,7 @@ public class BoostPickup : MonoBehaviour {
             player.GiveBoost (_boostValue);
             Disable();
             StartCoroutine(WaitForReenable());
+            _audioSource.PlayOneShot (_collectSound, 1f);
         }
     }
 

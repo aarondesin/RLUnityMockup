@@ -13,10 +13,15 @@ public class Ball : MonoBehaviour {
 
     ParticleSystem[] _explosionEffects;
 
+    [SerializeField] AudioClip _impactSound;
+    [SerializeField] AudioClip _explosionSound;
+    AudioSource _audioSource;
+
     private void Awake() {
         Instance = this;
         _renderer = GetComponent<MeshRenderer>();
         _explosionEffects = GetComponentsInChildren<ParticleSystem>();
+        _audioSource = GetComponent<AudioSource>();
     }
 
     private void OnTriggerEnter(Collider other) {
@@ -25,6 +30,11 @@ public class Ball : MonoBehaviour {
             var otherTeam = (GameManager.Team)(1 - (int)other.GetComponent<Goal>().Team);
             GameManager.Instance.RegisterGoal (otherTeam);
         }
+    }
+
+    private void OnCollisionEnter(Collision collision) {
+        _audioSource.PlayOneShot (_impactSound, Mathf.Clamp01(collision.relativeVelocity.magnitude / 75f));
+        Debug.Log ("bap");
     }
 
     private void OnDrawGizmosSelected() {
@@ -37,7 +47,7 @@ public class Ball : MonoBehaviour {
             player.GetComponent<Rigidbody>().AddExplosionForce (_EXPLOSION_FORCE, transform.position, _EXPLOSION_RADIUS, 1f, ForceMode.Impulse);
         _renderer.enabled = false;
         foreach (var ps in _explosionEffects) ps.Play();
-        
+        _audioSource.PlayOneShot (_explosionSound, 0.75f);
         //gameObject.SetActive(false);
 
     }

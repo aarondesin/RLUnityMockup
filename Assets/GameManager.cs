@@ -27,10 +27,16 @@ public class GameManager : MonoBehaviour {
     float _matchTimer;
     bool _timerRunning = false;
 
+    AudioSource _audioSource;
+
+    [SerializeField] AudioClip _roundCountdownSound;
+    [SerializeField] AudioClip _roundStartSound;
+
     private void Awake() {
         Instance= this;
         _score.Add (Team.Orange, 0);
         _score.Add (Team.Blue, 0);
+        _audioSource = GetComponent<AudioSource>();
     }
 
     private void Start() {
@@ -106,9 +112,14 @@ public class GameManager : MonoBehaviour {
             Countdown.Instance.gameObject.SetActive (true);
 
             float countdown = _ROUND_START_COUNTDOWN;
+            int rounded = 4;
             while (countdown > 0f) {
                 countdown -= Time.deltaTime;
-                Countdown.Instance.SetText (Mathf.CeilToInt(countdown).ToString());
+                var newRounded = Mathf.CeilToInt(countdown);
+                if (newRounded != rounded)
+                    _audioSource.PlayOneShot (_roundCountdownSound, 0.5f);
+                rounded = newRounded;
+                Countdown.Instance.SetText (rounded.ToString());
                 yield return null;
             }
 
@@ -116,6 +127,7 @@ public class GameManager : MonoBehaviour {
                 player.EnableMovement();
 
             Countdown.Instance.SetText ("GO!");
+            _audioSource.PlayOneShot (_roundStartSound, 0.5f);
             _timerRunning = true;
 
             yield return new WaitForSeconds (_ROUND_START_DELAY);
