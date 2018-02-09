@@ -118,7 +118,6 @@ namespace RL.Gameplay
                 _players.Add(player);
                 int id = _players.Count;
                 player.AssignPlayerID(id);
-                player.Camera.AssignPlayerID(id);
             }
 
             //foreach (var controller in Input.GetJoystickNames())

@@ -5,6 +5,8 @@ using RL.Gameplay;
 
 using UnityEngine;
 
+#pragma warning disable 0414 
+
 namespace RL.Camera
 {
     /// <summary>
@@ -134,7 +136,6 @@ namespace RL.Camera
 
                     // Bind y position between player and floor
                     float extrapolatedY = playerPos.y + ballToPlayer.y * _CAMERA_XZ_OFFSET;
-                    float y = extrapolatedY;
                     float yBound = Mathf.Max(extrapolatedY + _CAMERA_HEIGHT, raycastY);
 
                     // Calculate new camera position

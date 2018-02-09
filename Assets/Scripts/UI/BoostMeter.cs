@@ -1,6 +1,8 @@
 ﻿// BoostMeter.cs
 // ©2017 Aaron Desin
 
+using RL.Gameplay;
+
 using UnityEngine;
 using UnityEngine.UI;
 

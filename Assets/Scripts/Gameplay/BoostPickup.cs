@@ -44,11 +44,6 @@ namespace RL.Gameplay
         bool _enabled = true;
 
         /// <summary>
-        /// The collider attached to this pickup.
-        /// </summary>
-        Collider _collider;
-
-        /// <summary>
         /// The AudioSource attached to this pickup.
         /// </summary>
         AudioSource _audioSource;
@@ -59,7 +54,6 @@ namespace RL.Gameplay
         void Awake()
         {
             // Init component references
-            _collider = GetComponentInChildren<Collider>();
             _audioSource = GetComponent<AudioSource>();
         }
 
