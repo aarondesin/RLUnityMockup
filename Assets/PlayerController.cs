@@ -1,4 +1,7 @@
-﻿using System.Collections;
+﻿// PlayerController.cs
+// ©2017 Aaron Desi
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
